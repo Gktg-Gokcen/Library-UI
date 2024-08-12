@@ -7,8 +7,6 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
@@ -20,7 +18,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     },
 }));
 
-export default function AddFormDialog({ open, setOpen, fetchBooks, handleGetBookAndUserCount }) {
+export default function AddFormDialog({ open, setOpen, fetchBooks, handleGetBookAndUserCount, handleAlert }) {
 
 
     const [book, setBook] = useState({});
@@ -34,9 +32,11 @@ export default function AddFormDialog({ open, setOpen, fetchBooks, handleGetBook
                 fetchBooks();
                 handleGetBookAndUserCount();
                 handleClose();
+                handleAlert("success");
             })
             .catch(error => {
                 console.error('Kitap ekleme işlemi sırasında hata oluştu.', error);
+                handleAlert("error");
             });
     }
 
@@ -118,9 +118,7 @@ export default function AddFormDialog({ open, setOpen, fetchBooks, handleGetBook
 
                 </DialogContent>
                 <DialogActions>
-                    <Button autoFocus onClick={() => handleAddBook(book)}>
-                        Ekle
-                    </Button>
+                    <Button autoFocus onClick={() =>handleAddBook(book)}>Ekle</Button>
                 </DialogActions>
             </Dialog>
         </React.Fragment>

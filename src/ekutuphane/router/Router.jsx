@@ -6,7 +6,7 @@ import Layout from 'src/ekutuphane/components/layout/Layout';
 export const Dashboard = lazy(() => import('src/ekutuphane/components/Dashboard'));
 export const Book = lazy(() => import('src/ekutuphane/components/Book'));
 export const BlogPage = lazy(() => import('src/pages/blog'));
-export const UserPage = lazy(() => import('src/pages/user'));
+export const UserPage = lazy(() => import('src/ekutuphane/components/Users.jsx'));
 export const LoginPage = lazy(() => import('src/ekutuphane/components/Login'));
 export const ProductsPage = lazy(() => import('src/pages/products'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));

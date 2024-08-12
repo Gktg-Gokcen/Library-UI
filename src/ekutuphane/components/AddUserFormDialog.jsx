@@ -7,8 +7,6 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
@@ -20,24 +18,30 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     },
 }));
 
-export default function FormDialog({ open, setOpen, book, setUpdatedBook, fetchBooks, handleAlert }) {
+export default function AddUserFormDialog({ open, setOpen, fetchUsers, handleAlert }) {
+
+
+    const [user, setUser] = useState({});
 
     const handleClose = () => {
         setOpen(false)
     }
 
-    const handleUpdateBook = async (book) => {
-        await axios.put('http://localhost:8080/api/book?bookId=' + book?.bookId, book)
-            .then(() => {
-                setOpen(false);
-                fetchBooks();
-                handleAlert("success");
-            })
-            .catch(error => {
-                console.error('API isteği sırasında hata oluştu:', error);
-                handleAlert("error")
-            });
-    }
+
+    const handleAddUser = async(user) => {
+        await axios.post("http://localhost:8080/api/user", user)
+          .then(() => {
+            fetchUsers();
+            handleClose(); 
+            setUser({})
+            handleAlert("success");
+          })
+          .catch(error => {
+            console.error('Kitap ekleme işlemi sırasında hata oluştu.', error);
+            handleAlert("error");
+        });
+      }
+
 
     return (
         <React.Fragment>
@@ -46,20 +50,6 @@ export default function FormDialog({ open, setOpen, book, setUpdatedBook, fetchB
                 aria-labelledby="customized-dialog-title"
                 open={open}
             >
-                <div>
-                    <Box
-                        component="img"
-                        alt={book?.bookName}
-                        src={book?.imageUrl}
-                        sx={{
-                            top: 0,
-                            width: 1,
-                            height: '400px',
-                            objectFit: 'content',
-
-                        }}
-                    />
-                </div>
                 <IconButton
                     aria-label="close"
                     onClick={handleClose}
@@ -76,43 +66,49 @@ export default function FormDialog({ open, setOpen, book, setUpdatedBook, fetchB
                     <TextField
                         autoFocus
                         margin="dense"
-                        label="Kitap Adı"
+                        label="Adı"
                         type="text"
                         fullWidth
                         variant="standard"
-                        value={book?.bookName}
-                        onChange={(e) => setUpdatedBook({ ...book, bookName: e.target.value })}
+                        value={user?.username}
+                        onChange={(e) => setUser({ ...user, username: e.target.value })}
                     />
                     <TextField
                         autoFocus
                         multiline
                         margin="dense"
-                        label="Kitap Konusu"
+                        label="Soyad"
                         type="text"
                         fullWidth
                         variant="standard"
-                        value={book?.summary}
-                        onChange={(e) => setUpdatedBook({ ...book, summary: e.target.value })}
+                        value={user?.userSurname}
+                        onChange={(e) => setUser({ ...user, userSurname: e.target.value })}
                     />
                     <TextField
                         autoFocus
                         multiline
                         margin="dense"
-                        label="Kitabın adedi"
+                        label="Parola"
                         type="text"
                         fullWidth
                         variant="standard"
-                        value={book?.quantity}
-                        onChange={(e) => setUpdatedBook({ ...book, quantity: e.target.value })}
+                        value={user?.userPassword}
+                        onChange={(e) => setUser({ ...user, userPassword: e.target.value })}
                     />
-                    <Typography gutterBottom sx={{ textAlign: 'right', fontFamily: 'serif' }}>
-                        {book?.author}
-                    </Typography>
+                    <TextField
+                        autoFocus
+                        multiline
+                        margin="dense"
+                        label="Mail"
+                        type="text"
+                        fullWidth
+                        variant="standard"
+                        value={user?.email}
+                        onChange={(e) => setUser({ ...user, email: e.target.value })}
+                    />
                 </DialogContent>
                 <DialogActions>
-                    <Button autoFocus onClick={() => handleUpdateBook(book)}>
-                        Güncelle
-                    </Button>
+                    <Button autoFocus onClick={() =>handleAddUser(user)}>Ekle</Button>
                 </DialogActions>
             </Dialog>
         </React.Fragment>

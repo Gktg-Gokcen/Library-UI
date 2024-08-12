@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -21,6 +21,10 @@ import UserTableHead from '../../sections/user/user-table-head';
 import TableEmptyRows from '../../sections/user/table-empty-rows';
 import UserTableToolbar from '../../sections/user/user-table-toolbar';
 import { emptyRows , applyFilter, getComparator} from '../../sections/user/utils';
+import axios from 'axios';
+import AddUserFormDialog from './AddUserFormDialog';
+import AlertComp from './AlertComp';
+
 // ----------------------------------------------------------------------
 
 
@@ -35,9 +39,66 @@ export default function UserPage() {
 
   const [filterName, setFilterName] = useState('');
 
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);  
+
+  const [addFormDialog, setAddFormDialog] = useState(false);
+
+  const [alert, setAlert] = useState("")
+
+  const [alertopen, setAlertopen] = useState(false);
+
+
+  const [users, setUsers] = useState([])
+
+  useEffect(() => {
+    fetchUsers();  
+  }, [])
+  
+
+  const fetchUsers= async() => {
+    await axios.get("http://localhost:8080/api/user")
+      .then(response => {
+        setUsers(response.data)
+        console.log("user",users);
+      })
+      
+  }
+
+  const handleDeleteUser = async(userId) => {
+    await axios.delete("http://localhost:8080/api/user?userId=" + userId)
+      .then(() => {
+        fetchUsers();
+        handleAlert("success");
+      })
+      .catch(error => {
+        console.error('Kitap silme işlemi sırasında hata oluştu.', error);
+        handleAlert("error");
+      });
+  }
+
+  const handleAddFormDialog = () => {
+    setAddFormDialog(true);
+  }
+
+  const handleAlert = (message) => {
+    if (message === "error") {
+      setAlert("error")
+    } else if (message === "success") {
+      setAlert("success")
+    }
+    setAlertopen(true);
+  }
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setAlertopen(false);
+  };
 
   const handleSort = (event, id) => {
+    console.log(id);    
     const isAsc = orderBy === id && order === 'asc';
     if (id !== '') {
       setOrder(isAsc ? 'desc' : 'asc');
@@ -95,13 +156,11 @@ export default function UserPage() {
   const notFound = !dataFiltered.length && !!filterName;
 
   return (
+    <>
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography variant="h4">Users</Typography>
+        <Typography variant="h4">Kullanıcılar</Typography>
 
-        <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
-          New User
-        </Button>
       </Stack>
 
       <Card>
@@ -110,6 +169,9 @@ export default function UserPage() {
           filterName={filterName}
           onFilterName={handleFilterByName}
         />
+                <Button onClick={handleAddFormDialog} sx={{marginLeft:'1000px'}} variant="contained" color="success" startIcon={<Iconify icon="eva:plus-fill" />}>
+          Kulanıcı Ekle
+        </Button>
 
         <Scrollbar>
           <TableContainer sx={{ overflow: 'unset' }}>
@@ -122,28 +184,34 @@ export default function UserPage() {
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
-                  { id: 'name', label: 'Name' },
-                  { id: 'company', label: 'Company' },
-                  { id: 'role', label: 'Role' },
-                  { id: 'isVerified', label: 'Verified', align: 'center' },
-                  { id: 'status', label: 'Status' },
-                  { id: '' },
+                  { id: 'id', label: 'Id' },
+                  { id: 'name', label: 'Adı' },
+                  { id: 'surname', label: 'Soyadı' },
+                  { id: 'mail', label: 'Mail' },
+                  // { id: 'password', label: 'Şifre'},
+                  // { id: 'status', label: 'Status' },
                 ]}
               />
               <TableBody>
                 {dataFiltered
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => (
+                  .map((user) => (
                     <UserTableRow
-                      key={row.id}
-                      name={row.name}
-                      role={row.role}
-                      status={row.status}
-                      company={row.company}
-                      avatarUrl={row.avatarUrl}
-                      isVerified={row.isVerified}
-                      selected={selected.indexOf(row.name) !== -1}
-                      handleClick={(event) => handleClick(event, row.name)}
+                      key={user?.userId}
+                      id={user?.userId}
+                      name={user?.username}
+                      surname={user?.userSurname}
+                      mail={user?.email}
+                      // password={user?.userPassword}
+                      // status={row.status}
+                      // company={row.company}
+                      // avatarUrl={row.avatarUrl}
+                      // isVerified={row.isVerified}
+                      selected={selected.indexOf(user.username) !== -1}
+                      handleClick={(event) => handleClick(event, user.username)}
+                      handleDeleteUser={handleDeleteUser}
+                      handleAlert={handleAlert}
+                      user={user}
                     />
                   ))}
 
@@ -169,5 +237,8 @@ export default function UserPage() {
         />
       </Card>
     </Container>
+    <AddUserFormDialog  open={addFormDialog} setOpen={setAddFormDialog} fetchUsers={fetchUsers} handleAlert={handleAlert}/>
+    <AlertComp alert={alert} alertopen={alertopen} handleClose={handleClose} ></AlertComp>
+    </>
   );
 }

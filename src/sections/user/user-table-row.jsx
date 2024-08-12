@@ -25,6 +25,12 @@ export default function UserTableRow({
   isVerified,
   status,
   handleClick,
+  surname,
+  mail,
+  password,
+  id,
+  handleDeleteUser,
+  user
 }) {
   const [open, setOpen] = useState(null);
 
@@ -43,6 +49,8 @@ export default function UserTableRow({
           <Checkbox disableRipple checked={selected} onChange={handleClick} />
         </TableCell>
 
+        <TableCell>{id}</TableCell>
+
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
             <Avatar alt={name} src={avatarUrl} />
@@ -52,15 +60,9 @@ export default function UserTableRow({
           </Stack>
         </TableCell>
 
-        <TableCell>{company}</TableCell>
+        <TableCell>{surname}</TableCell>
 
-        <TableCell>{role}</TableCell>
-
-        <TableCell align="center">{isVerified ? 'Yes' : 'No'}</TableCell>
-
-        <TableCell>
-          <Label color={(status === 'banned' && 'error') || 'success'}>{status}</Label>
-        </TableCell>
+        <TableCell>{mail}</TableCell>
 
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
@@ -79,12 +81,15 @@ export default function UserTableRow({
           sx: { width: 140 },
         }}
       >
-        <MenuItem onClick={handleCloseMenu}>
+        <MenuItem onClick={handleCloseMenu} sx={{ color:'blue'}}>
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
           Edit
         </MenuItem>
 
-        <MenuItem onClick={handleCloseMenu} sx={{ color: 'error.main' }}>
+        <MenuItem sx={{ color: 'error.main' }} onClick={() => {
+          handleDeleteUser(user.userId);
+          handleCloseMenu();           
+        }} >
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Delete
         </MenuItem>
@@ -99,7 +104,10 @@ UserTableRow.propTypes = {
   handleClick: PropTypes.func,
   isVerified: PropTypes.any,
   name: PropTypes.any,
+  username: PropTypes.any,
   role: PropTypes.any,
   selected: PropTypes.any,
-  status: PropTypes.string,
+  mail: PropTypes.string,
+  password: PropTypes.string,
+  id: PropTypes.string
 };

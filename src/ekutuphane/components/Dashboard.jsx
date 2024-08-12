@@ -15,12 +15,11 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Button from '@mui/material/Button';
 import Iconify from 'src/components/iconify';
-import Alert from '@mui/material/Alert';
-
 
 import AppWidgetSummary from 'src/sections/overview/app-widget-summary';
 import FormDialog from './FormDialog';
 import AddFormDialog from './AddFormDialog';
+import AlertComp from './AlertComp';
 
 export default function Dashboard() {
 
@@ -31,6 +30,8 @@ export default function Dashboard() {
   const [addFormDialog, setAddFormDialog] = useState(false);
   const [updatedBook, setUpdatedBook] = useState({});
   const [alert, setAlert] = useState("")
+  const [alertopen, setAlertopen] = useState(false);
+
 
   useEffect(() => {
     fetchBooks();
@@ -72,7 +73,7 @@ export default function Dashboard() {
       .then(() => {
         fetchBooks();
         handleGetBookAndUserCount();
-        handleAlert("success")
+        handleAlert("success");
       })
       .catch(error => {
         console.error('Kitap silme işlemi sırasında hata oluştu.', error);
@@ -87,12 +88,22 @@ export default function Dashboard() {
     } else if (message === "success") {
       setAlert("success")
     }
+    setAlertopen(true);
   }
 
 
   const handleAddFormDialog = () => {
     setAddFormDialog(true);
   }
+
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setAlertopen(false);
+  };
 
   return (
     <>
@@ -144,7 +155,7 @@ export default function Dashboard() {
                   <TableCell>Yazar</TableCell>
                   <TableCell>Stok Sayısı</TableCell>
                   <TableCell sx={{ display: 'flex', justifyContent: 'center', gap: '30px' }}>
-                    <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleAddFormDialog} >
+                    <Button variant="contained" color="success" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleAddFormDialog} >
                       Kitap Ekle
                     </Button>
                   </TableCell>
@@ -161,8 +172,11 @@ export default function Dashboard() {
                     <TableCell>{book?.author}</TableCell>
                     <TableCell>{book?.quantity}</TableCell>
                     <TableCell>
-                      <EditIcon sx={{ marginRight: '30px' }} onClick={() => handleUpdateForm(book)} />
-                      <DeleteIcon onClick={() => handleDeleteBook(book)} />
+                      <EditIcon color='primary' sx={{ marginRight: '30px' }} onClick={() => handleUpdateForm(book)} />
+                      <DeleteIcon color='error' onClick={() => {
+                        handleAlert();
+                        handleDeleteBook(book);
+                      }} />
                     </TableCell>
 
                   </TableRow>
@@ -173,14 +187,12 @@ export default function Dashboard() {
         </Grid>
       </Container>
       {
-        open === true && <FormDialog open={open} setOpen={setOpen} book={updatedBook} setUpdatedBook={setUpdatedBook} fetchBooks={fetchBooks} />
+        open === true && <FormDialog open={open} setOpen={setOpen} book={updatedBook} setUpdatedBook={setUpdatedBook} fetchBooks={fetchBooks} handleAlert={handleAlert} />
       }
       {
-        addFormDialog === true && <AddFormDialog open={addFormDialog} setOpen={setAddFormDialog} fetchBooks={fetchBooks} handleGetBookAndUserCount={handleGetBookAndUserCount} />
+        addFormDialog === true && <AddFormDialog open={addFormDialog} setOpen={setAddFormDialog} handleAlert={handleAlert} fetchBooks={fetchBooks} handleGetBookAndUserCount={handleGetBookAndUserCount} />
       }
-      {      
-        alert === "succes" ? <Alert severity="success"> İşlem başarılı .</Alert> : <Alert severity="error"> İşlem başarısız .</Alert> 
-      }      
+      <AlertComp alert={alert} alertopen={alertopen} handleClose={handleClose} ></AlertComp>
     </>
   );
 }
