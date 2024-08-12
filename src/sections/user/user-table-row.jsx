@@ -13,6 +13,7 @@ import IconButton from '@mui/material/IconButton';
 
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
+import UpdateUserFormDialog from 'src/ekutuphane/components/UpdateUserFormDialog';
 
 // ----------------------------------------------------------------------
 
@@ -20,19 +21,19 @@ export default function UserTableRow({
   selected,
   name,
   avatarUrl,
-  company,
-  role,
-  isVerified,
-  status,
   handleClick,
   surname,
   mail,
-  password,
   id,
   handleDeleteUser,
-  user
+  user,
+  fetchUsers,
+  handleAlert
 }) {
   const [open, setOpen] = useState(null);
+  const [updateUserFormDialog, setUpdateUserFormDialog] = useState(false)
+  const [updatedUser, setUpdatedUser] = useState({})
+
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -41,6 +42,11 @@ export default function UserTableRow({
   const handleCloseMenu = () => {
     setOpen(null);
   };
+
+  const handleUpdateUserFormDialog = () => {
+    setUpdateUserFormDialog(true);
+    setUpdatedUser(user);
+  }
 
   return (
     <>
@@ -81,7 +87,7 @@ export default function UserTableRow({
           sx: { width: 140 },
         }}
       >
-        <MenuItem onClick={handleCloseMenu} sx={{ color:'blue'}}>
+        <MenuItem onClick={handleUpdateUserFormDialog} sx={{ color:'blue'}}>
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
           Edit
         </MenuItem>
@@ -94,6 +100,9 @@ export default function UserTableRow({
           Delete
         </MenuItem>
       </Popover>
+      {
+        updateUserFormDialog === true && <UpdateUserFormDialog open={updateUserFormDialog} setOpen={setUpdateUserFormDialog} user={updatedUser} setUser={setUpdatedUser} fetchUsers={fetchUsers} handleAlert={handleAlert} />
+      }
     </>
   );
 }

@@ -20,10 +20,11 @@ import UserTableRow from '../../sections/user/user-table-row';
 import UserTableHead from '../../sections/user/user-table-head';
 import TableEmptyRows from '../../sections/user/table-empty-rows';
 import UserTableToolbar from '../../sections/user/user-table-toolbar';
-import { emptyRows , applyFilter, getComparator} from '../../sections/user/utils';
+import { emptyRows, applyFilter, getComparator } from '../../sections/user/utils';
 import axios from 'axios';
 import AddUserFormDialog from './AddUserFormDialog';
 import AlertComp from './AlertComp';
+import UpdateUserFormDialog from './UpdateUserFormDialog';
 
 // ----------------------------------------------------------------------
 
@@ -39,7 +40,7 @@ export default function UserPage() {
 
   const [filterName, setFilterName] = useState('');
 
-  const [rowsPerPage, setRowsPerPage] = useState(10);  
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const [addFormDialog, setAddFormDialog] = useState(false);
 
@@ -47,24 +48,25 @@ export default function UserPage() {
 
   const [alertopen, setAlertopen] = useState(false);
 
+  const [updatedUser, setUpdatedUser] = useState({})
 
   const [users, setUsers] = useState([])
 
   useEffect(() => {
-    fetchUsers();  
+    fetchUsers();
+    
   }, [])
   
-
-  const fetchUsers= async() => {
+  const fetchUsers = async () => {
     await axios.get("http://localhost:8080/api/user")
       .then(response => {
         setUsers(response.data)
-        console.log("user",users);
+        console.log("user", users);
       })
-      
+
   }
 
-  const handleDeleteUser = async(userId) => {
+  const handleDeleteUser = async (userId) => {
     await axios.delete("http://localhost:8080/api/user?userId=" + userId)
       .then(() => {
         fetchUsers();
@@ -98,7 +100,7 @@ export default function UserPage() {
   };
 
   const handleSort = (event, id) => {
-    console.log(id);    
+    console.log(id);
     const isAsc = orderBy === id && order === 'asc';
     if (id !== '') {
       setOrder(isAsc ? 'desc' : 'asc');
@@ -157,88 +159,83 @@ export default function UserPage() {
 
   return (
     <>
-    <Container>
-      <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography variant="h4">Kullanıcılar</Typography>
+      <Container>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+          <Typography variant="h4">Kullanıcılar</Typography>
 
-      </Stack>
+        </Stack>
 
-      <Card>
-        <UserTableToolbar
-          numSelected={selected.length}
-          filterName={filterName}
-          onFilterName={handleFilterByName}
-        />
-                <Button onClick={handleAddFormDialog} sx={{marginLeft:'1000px'}} variant="contained" color="success" startIcon={<Iconify icon="eva:plus-fill" />}>
-          Kulanıcı Ekle
-        </Button>
+        <Card>
+          <UserTableToolbar
+            numSelected={selected.length}
+            filterName={filterName}
+            onFilterName={handleFilterByName}
+          />
+          <Button onClick={handleAddFormDialog} sx={{ marginLeft: '1000px' }} variant="contained" color="success" startIcon={<Iconify icon="eva:plus-fill" />}>
+            Kulanıcı Ekle
+          </Button>
 
-        <Scrollbar>
-          <TableContainer sx={{ overflow: 'unset' }}>
-            <Table sx={{ minWidth: 800 }}>
-              <UserTableHead
-                order={order}
-                orderBy={orderBy}
-                rowCount={users.length}
-                numSelected={selected.length}
-                onRequestSort={handleSort}
-                onSelectAllClick={handleSelectAllClick}
-                headLabel={[
-                  { id: 'id', label: 'Id' },
-                  { id: 'name', label: 'Adı' },
-                  { id: 'surname', label: 'Soyadı' },
-                  { id: 'mail', label: 'Mail' },
-                  // { id: 'password', label: 'Şifre'},
-                  // { id: 'status', label: 'Status' },
-                ]}
-              />
-              <TableBody>
-                {dataFiltered
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((user) => (
-                    <UserTableRow
-                      key={user?.userId}
-                      id={user?.userId}
-                      name={user?.username}
-                      surname={user?.userSurname}
-                      mail={user?.email}
-                      // password={user?.userPassword}
-                      // status={row.status}
-                      // company={row.company}
-                      // avatarUrl={row.avatarUrl}
-                      // isVerified={row.isVerified}
-                      selected={selected.indexOf(user.username) !== -1}
-                      handleClick={(event) => handleClick(event, user.username)}
-                      handleDeleteUser={handleDeleteUser}
-                      handleAlert={handleAlert}
-                      user={user}
-                    />
-                  ))}
-
-                <TableEmptyRows
-                  height={77}
-                  emptyRows={emptyRows(page, rowsPerPage, users.length)}
+          <Scrollbar>
+            <TableContainer sx={{ overflow: 'unset' }}>
+              <Table sx={{ minWidth: 800 }}>
+                <UserTableHead
+                  order={order}
+                  orderBy={orderBy}
+                  rowCount={users.length}
+                  numSelected={selected.length}
+                  onRequestSort={handleSort}
+                  onSelectAllClick={handleSelectAllClick}
+                  headLabel={[
+                    { id: 'id', label: 'Id' },
+                    { id: 'name', label: 'Adı' },
+                    { id: 'surname', label: 'Soyadı' },
+                    { id: 'mail', label: 'Mail' },
+                  ]}
                 />
+                <TableBody>
+                  {dataFiltered
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((user) => (
+                      <UserTableRow
+                        key={user?.userId}
+                        id={user?.userId}
+                        name={user?.username}
+                        surname={user?.userSurname}
+                        mail={user?.email}
+                        selected={selected.indexOf(user.username) !== -1}
+                        handleClick={(event) => handleClick(event, user.username)}
+                        handleDeleteUser={handleDeleteUser}
+                        handleAlert={handleAlert}
+                        user={user}
+                        fetchUsers={fetchUsers}
+                      />
+                    ))}
 
-                {notFound && <TableNoData query={filterName} />}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Scrollbar>
+                  <TableEmptyRows
+                    height={77}
+                    emptyRows={emptyRows(page, rowsPerPage, users.length)}
+                  />
 
-        <TablePagination
-          page={page}
-          component="div"
-          count={users.length}
-          rowsPerPage={rowsPerPage}
-          onPageChange={handleChangePage}
-          rowsPerPageOptions={[5, 10, 25]}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </Card>
-    </Container>
-    <AddUserFormDialog  open={addFormDialog} setOpen={setAddFormDialog} fetchUsers={fetchUsers} handleAlert={handleAlert}/>
-    <AlertComp alert={alert} alertopen={alertopen} handleClose={handleClose} ></AlertComp>
+                  {notFound && <TableNoData query={filterName} />}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Scrollbar>
+
+          <TablePagination
+            page={page}
+            component="div"
+            count={users.length}
+            rowsPerPage={rowsPerPage}
+            onPageChange={handleChangePage}
+            rowsPerPageOptions={[5, 10, 25]}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </Card>
+      </Container>
+      <AddUserFormDialog open={addFormDialog} setOpen={setAddFormDialog} fetchUsers={fetchUsers} handleAlert={handleAlert} />
+
+      <AlertComp alert={alert} alertopen={alertopen} handleClose={handleClose} ></AlertComp>
     </>
   );
 }
