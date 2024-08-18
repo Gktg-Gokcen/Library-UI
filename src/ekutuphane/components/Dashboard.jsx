@@ -45,9 +45,9 @@ export default function Dashboard() {
 
   const fetchBooks = async () => {
     const user = JSON.parse(localStorage.getItem('user'));
-    const token = user ? user.token : null;
+    const token = user.user.token;
     console.log("token=", token)
-    await axios.get('http://localhost:8080/api/book/GetAll', {
+    await axios.get('http://localhost:8080/api/book/getall', {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -69,7 +69,11 @@ export default function Dashboard() {
   const handleDeleteBook = async (book) => {
     console.log("girdin mi dayi ?");
 
-    await axios.delete('http://localhost:8080/api/book?bookId=' + book?.bookId)
+    await axios.delete('http://localhost:8080/api/book?bookId=' + book?.bookId, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
       .then(() => {
         fetchBooks();
         handleGetBookAndUserCount();

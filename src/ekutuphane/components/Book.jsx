@@ -30,8 +30,10 @@ export default function Book() {
 
     const handleGetBooks = async () => {
         const user = JSON.parse(localStorage.getItem('user'));
-        const token = user ? user.token : null;
-        await axios.get('http://localhost:8080/api/book/GetAll', {
+        const token = user.user.token;
+        console.log("token",token);
+        
+        await axios.get('http://localhost:8080/api/book/getall', {
             headers: {
                 Authorization: `Bearer ${token}`
             }

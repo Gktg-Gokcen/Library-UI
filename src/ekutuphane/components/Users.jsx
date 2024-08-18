@@ -54,11 +54,17 @@ export default function UserPage() {
 
   useEffect(() => {
     fetchUsers();
-    
+
   }, [])
-  
+
   const fetchUsers = async () => {
-    await axios.get("http://localhost:8080/api/user")
+    const user = JSON.parse(localStorage.getItem('user'));
+    const token = user.user.token;
+    await axios.get("http://localhost:8080/api/user", {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
       .then(response => {
         setUsers(response.data)
         console.log("user", users);
