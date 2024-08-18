@@ -25,6 +25,7 @@ import axios from 'axios';
 import AddUserFormDialog from './AddUserFormDialog';
 import AlertComp from './AlertComp';
 import UpdateUserFormDialog from './UpdateUserFormDialog';
+import apiClient from '../config/AxiosConfig';
 
 // ----------------------------------------------------------------------
 
@@ -58,19 +59,15 @@ export default function UserPage() {
   }, [])
 
   const fetchUsers = async () => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    const token = user.user.token;
-    await axios.get("http://localhost:8080/api/user", {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-      .then(response => {
-        setUsers(response.data)
-        console.log("user", users);
-      })
+    try {
+      const response = await apiClient.get('/user');
+      setUsers(response.data);
+      console.log("user", response.data);
+    } catch (error) {
+      console.error('API isteği sırasında bir hata oluştu:', error);
+    }
+  };
 
-  }
 
   const handleDeleteUser = async (userId) => {
     await axios.delete("http://localhost:8080/api/user?userId=" + userId)

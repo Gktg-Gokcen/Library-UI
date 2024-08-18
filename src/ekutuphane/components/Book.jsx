@@ -8,6 +8,7 @@ import ProductCard from '../../sections/products/product-card'
 import ProductSort from '../../sections/products/product-sort';
 import ProductFilters from '../../sections/products/product-filters';
 import ProductCartWidget from '../../sections/products/product-cart-widget';
+import apiClient from '../config/AxiosConfig';
 
 
 
@@ -29,19 +30,14 @@ export default function Book() {
     }, [])
 
     const handleGetBooks = async () => {
-        const user = JSON.parse(localStorage.getItem('user'));
-        const token = user.user.token;
-        console.log("token",token);
-        
-        await axios.get('http://localhost:8080/api/book/getall', {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        }).then(response => {
-            console.log("response", response)
+        try {
+            const response = await apiClient.get('/book/getall');
+            console.log("response", response);
             setBooks(response?.data);
-        })
-    }
+        } catch (error) {
+            console.error('API isteği sırasında bir hata oluştu:', error);
+        }
+    };
     return (
         <Container>
             <Stack

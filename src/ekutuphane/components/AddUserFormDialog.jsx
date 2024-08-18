@@ -1,13 +1,17 @@
 import axios from 'axios';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 import CloseIcon from '@mui/icons-material/Close';
 import TextField from '@mui/material/TextField';
+import apiClient from '../config/AxiosConfig';
+import InputLabel from '@mui/material/InputLabel';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -22,26 +26,53 @@ export default function AddUserFormDialog({ open, setOpen, fetchUsers, handleAle
 
 
     const [user, setUser] = useState({});
+    const [roles, setRoles] = useState([]);
+    const [role, setRole] = useState('');
+
+
 
     const handleClose = () => {
         setOpen(false)
     }
 
+    useEffect(() => {
+        fetchRoles();
+        console.log(user);
+        
+    }, [])
 
-    const handleAddUser = async(user) => {
+
+
+    const fetchRoles = async () => {
+        try {
+            const response = await apiClient.get('/role');
+            setRoles(response?.data);
+            console.log("role", response?.data);
+        } catch (error) {
+            console.error('API isteği sırasında bir hata oluştu:', error);
+        }
+    };
+
+    const handleAddUser = async (user) => {
         await axios.post("http://localhost:8080/api/user", user)
-          .then(() => {
-            fetchUsers();
-            handleClose(); 
-            setUser({})
-            handleAlert("success");
-          })
-          .catch(error => {
-            console.error('Kitap ekleme işlemi sırasında hata oluştu.', error);
-            handleAlert("error");
-        });
-      }
+            .then(() => {
+                fetchUsers();
+                handleClose();
+                setUser({})
+                handleAlert("success");
+            })
+            .catch(error => {
+                console.error('Kullanıcı ekleme işlemi sırasında hata oluştu.', error);
+                handleAlert("error");
+            });
+    }
 
+    const handleChange = (event) => {
+        setRole(event.target.value);
+        setUser({ ...user, roleId: event.target.value })
+        console.log("role", role);
+        
+      };
 
     return (
         <React.Fragment>
@@ -102,13 +133,28 @@ export default function AddUserFormDialog({ open, setOpen, fetchUsers, handleAle
                         label="Mail"
                         type="text"
                         fullWidth
+                        sx={{marginBottom: 2}}
                         variant="standard"
                         value={user?.email}
                         onChange={(e) => setUser({ ...user, email: e.target.value })}
                     />
+                     <InputLabel id="demo-select-small-label">Role</InputLabel>
+                    <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        value={role}
+                        label="Role"
+                        sx={{ minWidth: 250, marginTop: 2}}
+                        onChange={handleChange}
+                        
+                    >
+                        {roles?.map((role) =>
+                        <MenuItem value={role?.id}>{role?.name}</MenuItem>
+                        )}
+                    </Select>
                 </DialogContent>
                 <DialogActions>
-                    <Button autoFocus onClick={() =>handleAddUser(user)}>Ekle</Button>
+                    <Button autoFocus onClick={() => handleAddUser(user)}>Ekle</Button>
                 </DialogActions>
             </Dialog>
         </React.Fragment>
