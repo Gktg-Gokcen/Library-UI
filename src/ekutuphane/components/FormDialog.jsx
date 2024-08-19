@@ -10,6 +10,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
+import apiClient from '../config/AxiosConfig';
+
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -27,17 +29,19 @@ export default function FormDialog({ open, setOpen, book, setUpdatedBook, fetchB
     }
 
     const handleUpdateBook = async (book) => {
-        await axios.put('http://localhost:8080/api/book?bookId=' + book?.bookId, book)
+        try {
+          await apiClient.put('/book?bookId=' + book?.bookId, book)
             .then(() => {
                 setOpen(false);
                 fetchBooks();
                 handleAlert("success");
             })
-            .catch(error => {
-                console.error('API isteği sırasında hata oluştu:', error);
-                handleAlert("error")
-            });
-    }
+        }
+        catch (error) {
+            console.error('API isteği sırasında hata oluştu:', error);
+            handleAlert("error")
+        }
+      };
 
     return (
         <React.Fragment>

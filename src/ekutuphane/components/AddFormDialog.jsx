@@ -8,6 +8,8 @@ import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import TextField from '@mui/material/TextField';
+import apiClient from '../config/AxiosConfig';
+
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -26,19 +28,21 @@ export default function AddFormDialog({ open, setOpen, fetchBooks, handleGetBook
     const handleClose = () => {
         setOpen(false)
     }
+    
     const handleAddBook = async (book) => {
-        await axios.post('http://localhost:8080/api/book', book)
-            .then(() => {
-                fetchBooks();
-                handleGetBookAndUserCount();
-                handleClose();
-                handleAlert("success");
-            })
-            .catch(error => {
-                console.error('Kitap ekleme işlemi sırasında hata oluştu.', error);
-                handleAlert("error");
-            });
-    }
+        try {
+            const response = await apiClient.post('/book',book)
+                .then(() => {
+                    fetchBooks();
+                    handleGetBookAndUserCount();
+                    handleClose();
+                    handleAlert("success");
+                })
+        } catch (error) {
+            console.error('Kitap ekleme işlemi sırasında hata oluştu.', error);
+            handleAlert("error");
+        }
+    };
 
 
     return (

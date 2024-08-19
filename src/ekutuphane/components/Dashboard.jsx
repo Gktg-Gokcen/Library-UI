@@ -15,6 +15,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Button from '@mui/material/Button';
 import Iconify from 'src/components/iconify';
+import apiClient from '../config/AxiosConfig';
+
 
 import AppWidgetSummary from 'src/sections/overview/app-widget-summary';
 import FormDialog from './FormDialog';
@@ -38,27 +40,27 @@ export default function Dashboard() {
     handleGetBookAndUserCount();
   }, []);
 
+
   const handleGetBookAndUserCount = async () => {
-    await axios.get('http://localhost:8080/api/book/count').then(response => { setBookcount(response?.data) })
-    await axios.get('http://localhost:8080/api/user/count').then(response => { setUsercount(response?.data) })
+    try {
+      const response = await apiClient.get('/book/count');
+      const result = await apiClient.get('/user/count');
+      setBookcount(response.data);
+      setUsercount(result.data);
+    } catch (error) {
+      console.error('API isteği sırasında bir hata oluştu:', error);
+    }
   }
 
   const fetchBooks = async () => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    const token = user.user.token;
-    console.log("token=", token)
-    await axios.get('http://localhost:8080/api/book/getall', {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-      .then(response => {
-        setBooks(response.data);
-      })
-      .catch(error => {
-        console.error('API isteği sırasında hata oluştu:', error);
-      });
-  }
+    try {
+      const response = await apiClient.get('/book/getall');
+      console.log("response", response);
+      setBooks(response?.data);
+    } catch (error) {
+      console.error('API isteği sırasında bir hata oluştu:', error);
+    }
+  };
 
   const handleUpdateForm = (book) => {
     console.log('ssss')
@@ -67,24 +69,18 @@ export default function Dashboard() {
   }
 
   const handleDeleteBook = async (book) => {
-    console.log("girdin mi dayi ?");
-
-    await axios.delete('http://localhost:8080/api/book?bookId=' + book?.bookId, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-      .then(() => {
-        fetchBooks();
-        handleGetBookAndUserCount();
-        handleAlert("success");
-      })
-      .catch(error => {
-        console.error('Kitap silme işlemi sırasında hata oluştu.', error);
-        handleAlert("error");
-      });
-
-  }
+    try {
+      await apiClient.delete('/book?bookId=' + book?.bookId)
+        .then(() => {
+          fetchBooks();
+          handleGetBookAndUserCount();
+          handleAlert("success");
+        })
+    } catch (error) {
+      console.error('Kitap silme işlemi sırasında hata oluştu.', error);
+      handleAlert("error");
+    }
+  };
 
   const handleAlert = (message) => {
     if (message === "error") {

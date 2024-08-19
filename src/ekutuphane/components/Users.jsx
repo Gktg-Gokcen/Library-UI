@@ -68,18 +68,19 @@ export default function UserPage() {
     }
   };
 
-
   const handleDeleteUser = async (userId) => {
-    await axios.delete("http://localhost:8080/api/user?userId=" + userId)
-      .then(() => {
-        fetchUsers();
-        handleAlert("success");
-      })
-      .catch(error => {
-        console.error('Kitap silme işlemi sırasında hata oluştu.', error);
-        handleAlert("error");
-      });
-  }
+    try {
+      await apiClient.delete('/user?userId=' + userId)
+        .then(() => {
+          fetchUsers();
+          handleAlert("success");
+        })
+    }
+    catch (error) {
+      console.error('Kitap silme işlemi sırasında hata oluştu.', error);
+      handleAlert("error");
+    }
+  };
 
   const handleAddFormDialog = () => {
     setAddFormDialog(true);

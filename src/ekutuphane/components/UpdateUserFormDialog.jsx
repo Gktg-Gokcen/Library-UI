@@ -7,9 +7,9 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
+import apiClient from '../config/AxiosConfig';
+
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -27,17 +27,19 @@ export default function UpdateUserFormDialog({ open, setOpen, user, setUser, fet
     }
 
     const handleUpdateUser = async (user) => {
-        await axios.put('http://localhost:8080/api/user?userId=' + user?.userId, user)
+        try {
+          await apiClient.put('/user?userId=' +user?.userId, user)
             .then(() => {
                 setOpen(false);
                 fetchUsers();
                 handleAlert("success");
             })
-            .catch(error => {
-                console.error('API isteği sırasında hata oluştu:', error);
-                handleAlert("error")
-            });
-    }
+        }
+        catch (error) {
+            console.error('API isteği sırasında hata oluştu:', error);
+            handleAlert("error")
+        }
+      };
 
     return (
         <React.Fragment>

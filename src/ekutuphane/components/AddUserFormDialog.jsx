@@ -13,6 +13,8 @@ import TextField from '@mui/material/TextField';
 import apiClient from '../config/AxiosConfig';
 import InputLabel from '@mui/material/InputLabel';
 
+
+
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
         padding: theme.spacing(2),
@@ -54,18 +56,19 @@ export default function AddUserFormDialog({ open, setOpen, fetchUsers, handleAle
     };
 
     const handleAddUser = async (user) => {
-        await axios.post("http://localhost:8080/api/user", user)
-            .then(() => {
-                fetchUsers();
-                handleClose();
-                setUser({})
-                handleAlert("success");
-            })
-            .catch(error => {
-                console.error('Kullanıcı ekleme işlemi sırasında hata oluştu.', error);
-                handleAlert("error");
-            });
-    }
+        try {
+            const response = await apiClient.post('/user/register?roleId='+ role, user)
+                .then(() => {
+                    fetchUsers();
+                    handleClose();
+                    setUser({})
+                    handleAlert("success");
+                })
+        } catch (error) {
+            console.error('API isteği sırasında bir hata oluştu:', error);
+        }
+    };
+    
 
     const handleChange = (event) => {
         setRole(event.target.value);
