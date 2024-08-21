@@ -8,12 +8,8 @@ import { alpha } from '@mui/material/styles';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
-
 import { account } from 'src/_mock/account';
-
-import axios from 'axios';
 import { useRouter } from 'src/routes/hooks';
-import Router from 'src/ekutuphane/router/Router';
 
 // ----------------------------------------------------------------------
 
@@ -34,7 +30,8 @@ const MENU_OPTIONS = [
 
 // ----------------------------------------------------------------------
 
-export default function AccountPopover() {
+export default function AccountPopover() 
+{
   const [open, setOpen] = useState(null);
 
   const router = useRouter();

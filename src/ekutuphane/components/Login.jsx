@@ -38,8 +38,13 @@ export default function LoginView() {
     try {
         const res = await axios.post('http://localhost:8080/auth/login', { username, userPassword: password });
         localStorage.setItem('user', JSON.stringify(res?.data));
-        console.log(res?.data)
-        router.push('/Book');
+        // console.log(res?.data)        
+        if (JSON.parse(localStorage.getItem("user"))?.user?.roles[0].name=="ADMIN") {
+          router.push('/dashboard');
+        }else{
+          router.push('/Book')
+        }
+        
     } catch (error) {
         console.log("Hata var !!!", error);
     }

@@ -21,7 +21,6 @@ import UserTableHead from '../../sections/user/user-table-head';
 import TableEmptyRows from '../../sections/user/table-empty-rows';
 import UserTableToolbar from '../../sections/user/user-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../../sections/user/utils';
-import axios from 'axios';
 import AddUserFormDialog from './AddUserFormDialog';
 import AlertComp from './AlertComp';
 import UpdateUserFormDialog from './UpdateUserFormDialog';
@@ -176,7 +175,7 @@ export default function UserPage() {
             onFilterName={handleFilterByName}
           />
           <Button onClick={handleAddFormDialog} sx={{ marginLeft: '1000px' }} variant="contained" color="success" startIcon={<Iconify icon="eva:plus-fill" />}>
-            Kulanıcı Ekle
+            Kullanıcı Ekle
           </Button>
 
           <Scrollbar>

@@ -5,6 +5,7 @@ import Layout from 'src/ekutuphane/components/layout/Layout';
 
 export const Dashboard = lazy(() => import('src/ekutuphane/components/Dashboard'));
 export const Book = lazy(() => import('src/ekutuphane/components/Book'));
+export const MyBooks = lazy(() => import('src/ekutuphane/components/MyBooks'));
 export const BlogPage = lazy(() => import('src/pages/blog'));
 export const UserPage = lazy(() => import('src/ekutuphane/components/Users.jsx'));
 export const LoginPage = lazy(() => import('src/ekutuphane/components/Login'));
@@ -29,6 +30,7 @@ export default function Router() {
         { path: 'user', element: <UserPage /> },
         { path: 'products', element: <ProductsPage /> },
         { path: 'book', element: <Book /> },
+        { path: 'MyBooks', element: <MyBooks /> },
         { path: 'blog', element: <BlogPage /> },
       ],
     },

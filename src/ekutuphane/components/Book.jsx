@@ -1,5 +1,3 @@
-import axios from 'axios';
-
 import React, { useState, useEffect } from 'react';
 import Stack from '@mui/material/Stack';
 import Container from '@mui/material/Container';
@@ -15,7 +13,7 @@ import apiClient from '../config/AxiosConfig';
 
 export default function Book() {
     const [openFilter, setOpenFilter] = useState(false);
-    const [books, setBooks] = useState([]);  
+    const [books, setBooks] = useState([]);
 
     const handleOpenFilter = () => {
         setOpenFilter(true);
@@ -61,7 +59,7 @@ export default function Book() {
             <Grid container spacing={3}>
                 {books.map((book) => (
                     <Grid key={book.bookId} xs={12} sm={6} md={3}>
-                        <ProductCard book={book} />
+                        <ProductCard book={book} handleGetBooks={handleGetBooks}/>
                     </Grid>
                 ))}
             </Grid>
