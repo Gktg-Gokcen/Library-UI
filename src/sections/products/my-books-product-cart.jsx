@@ -84,7 +84,7 @@ export default function MyBooksProductCart({ book, handleGetBooks }) {
 
   return (
     <>
-      <Card>
+      <Card sx={{minWidth:290}}>
         <div onClick={handleClickOpen}>
           <Box sx={{ pt: '100%', position: 'relative' }}>
             {book?.status && renderStatus}

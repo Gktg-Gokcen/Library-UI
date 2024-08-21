@@ -39,16 +39,8 @@ export default function Book() {
                 alignItems="center"
                 flexWrap="wrap-reverse"
                 justifyContent="flex-end"
-                sx={{ mb: 5 }}
+                sx={{ mb: 5}}
             >
-                <Stack direction="row" spacing={1} flexShrink={0} sx={{ my: 1 }}>
-                    <ProductFilters
-                        openFilter={openFilter}
-                        onOpenFilter={handleOpenFilter}
-                        onCloseFilter={handleCloseFilter}
-                    />
-                    <ProductSort />
-                </Stack>
             </Stack>
             <Grid container spacing={3}>
                 {books.map((book) => (

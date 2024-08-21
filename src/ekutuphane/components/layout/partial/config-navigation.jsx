@@ -1,4 +1,5 @@
 import SvgColor from 'src/components/svg-color';
+import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
@@ -25,7 +26,7 @@ const navConfig = [
   {
     title: 'My Books',
     path: '/MyBooks',
-    icon: icon('ic_cart'),
+    icon: icon('ic_book'),
   }
 
 ];
