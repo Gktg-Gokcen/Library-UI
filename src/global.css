@@ -1,2 +1,18 @@
 /* scrollbar */
 @import 'simplebar-react/dist/simplebar.min.css';
+
+
+.text-green-400{
+    background: rgb(16, 202, 16);
+    color: white;
+}
+
+.bg-red-400{
+    background-color: red;
+    color: white;
+}
+.my-toast li button {
+    left: 95%;
+    top: 10px;
+    border: 0;
+  }

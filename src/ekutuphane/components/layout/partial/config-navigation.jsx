@@ -27,11 +27,6 @@ const navConfig = [
     path: '/MyBooks',
     icon: icon('ic_cart'),
   }
-  // {
-  //   title: 'product',
-  //   path: '/products',
-  //   icon: icon('ic_cart'),
-  // },
 
 ];
 export default navConfig;

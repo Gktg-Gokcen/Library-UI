@@ -21,7 +21,7 @@ import apiClient from '../config/AxiosConfig';
 import AppWidgetSummary from 'src/sections/overview/app-widget-summary';
 import FormDialog from './FormDialog';
 import AddFormDialog from './AddFormDialog';
-import AlertComp from './AlertComp';
+import { toast } from 'sonner';
 
 export default function Dashboard() {
 
@@ -31,8 +31,6 @@ export default function Dashboard() {
   const [open, setOpen] = useState(false);
   const [addFormDialog, setAddFormDialog] = useState(false);
   const [updatedBook, setUpdatedBook] = useState({});
-  const [alert, setAlert] = useState("")
-  const [alertopen, setAlertopen] = useState(false);
 
 
   useEffect(() => {
@@ -55,7 +53,6 @@ export default function Dashboard() {
   const fetchBooks = async () => {
     try {
       const response = await apiClient.get('/book/getall');
-      console.log("response", response);
       setBooks(response?.data);
     } catch (error) {
       console.error('API isteği sırasında bir hata oluştu:', error);
@@ -63,7 +60,6 @@ export default function Dashboard() {
   };
 
   const handleUpdateForm = (book) => {
-    console.log('ssss')
     setOpen(true);
     setUpdatedBook(book);
   }
@@ -74,37 +70,18 @@ export default function Dashboard() {
         .then(() => {
           fetchBooks();
           handleGetBookAndUserCount();
-          handleAlert("success");
+          toast.success("Kitap başarıyla silindi.")
         })
     } catch (error) {
       console.error('Kitap silme işlemi sırasında hata oluştu.', error);
-      handleAlert("error");
+      toast.error("Kitap silinemedi.")
     }
   };
-
-  const handleAlert = (message) => {
-    if (message === "error") {
-      setAlert("error")
-    } else if (message === "success") {
-      setAlert("success")
-    }
-    setAlertopen(true);
-  }
 
 
   const handleAddFormDialog = () => {
     setAddFormDialog(true);
   }
-
-
-  const handleClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-
-    setAlertopen(false);
-  };
-
   return (
     <>
       <Container maxWidth="xl">
@@ -173,8 +150,7 @@ export default function Dashboard() {
                     <TableCell>{book?.quantity}</TableCell>
                     <TableCell>
                       <EditIcon color='primary' sx={{ marginRight: '30px' }} onClick={() => handleUpdateForm(book)} />
-                      <DeleteIcon color='error' onClick={() => {
-                        handleAlert();
+                      <DeleteIcon color='error' onClick={() => {                        
                         handleDeleteBook(book);
                       }} />
                     </TableCell>
@@ -187,12 +163,11 @@ export default function Dashboard() {
         </Grid>
       </Container>
       {
-        open === true && <FormDialog open={open} setOpen={setOpen} book={updatedBook} setUpdatedBook={setUpdatedBook} fetchBooks={fetchBooks} handleAlert={handleAlert} />
+        open === true && <FormDialog open={open} setOpen={setOpen} book={updatedBook} setUpdatedBook={setUpdatedBook} fetchBooks={fetchBooks}/>
       }
       {
-        addFormDialog === true && <AddFormDialog open={addFormDialog} setOpen={setAddFormDialog} handleAlert={handleAlert} fetchBooks={fetchBooks} handleGetBookAndUserCount={handleGetBookAndUserCount} />
+        addFormDialog === true && <AddFormDialog open={addFormDialog} setOpen={setAddFormDialog} fetchBooks={fetchBooks} handleGetBookAndUserCount={handleGetBookAndUserCount} />
       }
-      <AlertComp alert={alert} alertopen={alertopen} handleClose={handleClose} ></AlertComp>
     </>
   );
 }

@@ -34,11 +34,10 @@ export default function LoginView() {
 
   const handleLoginClick = async (e) => {
     e.preventDefault();
-    console.log("hello");
     try {
         const res = await axios.post('http://localhost:8080/auth/login', { username, userPassword: password });
         localStorage.setItem('user', JSON.stringify(res?.data));
-        // console.log(res?.data)        
+              
         if (JSON.parse(localStorage.getItem("user"))?.user?.roles[0].name=="ADMIN") {
           router.push('/dashboard');
         }else{
@@ -46,7 +45,7 @@ export default function LoginView() {
         }
         
     } catch (error) {
-        console.log("Hata var !!!", error);
+        console.error("Hata var !!!", error);
     }
   };
 

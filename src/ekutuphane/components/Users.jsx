@@ -22,34 +22,22 @@ import TableEmptyRows from '../../sections/user/table-empty-rows';
 import UserTableToolbar from '../../sections/user/user-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../../sections/user/utils';
 import AddUserFormDialog from './AddUserFormDialog';
-import AlertComp from './AlertComp';
 import UpdateUserFormDialog from './UpdateUserFormDialog';
 import apiClient from '../config/AxiosConfig';
+import { toast } from 'sonner';
 
 // ----------------------------------------------------------------------
 
 
 export default function UserPage() {
   const [page, setPage] = useState(0);
-
   const [order, setOrder] = useState('asc');
-
   const [selected, setSelected] = useState([]);
-
   const [orderBy, setOrderBy] = useState('name');
-
   const [filterName, setFilterName] = useState('');
-
   const [rowsPerPage, setRowsPerPage] = useState(10);
-
   const [addFormDialog, setAddFormDialog] = useState(false);
-
-  const [alert, setAlert] = useState("")
-
-  const [alertopen, setAlertopen] = useState(false);
-
   const [updatedUser, setUpdatedUser] = useState({})
-
   const [users, setUsers] = useState([])
 
   useEffect(() => {
@@ -61,23 +49,22 @@ export default function UserPage() {
     try {
       const response = await apiClient.get('/user');
       setUsers(response.data);
-      console.log("user", response.data);
     } catch (error) {
       console.error('API isteği sırasında bir hata oluştu:', error);
     }
   };
 
-  const handleDeleteUser = async (userId) => {
+  const handleDeleteUser = async (userId,user) => {
     try {
       await apiClient.delete('/user?userId=' + userId)
         .then(() => {
           fetchUsers();
-          handleAlert("success");
+          toast.success(` kullanıcı başarıyla silindi.`)
         })
     }
     catch (error) {
       console.error('Kitap silme işlemi sırasında hata oluştu.', error);
-      handleAlert("error");
+      toast.error("Silme işleminde bir hata oluştu.")
     }
   };
 
@@ -85,25 +72,7 @@ export default function UserPage() {
     setAddFormDialog(true);
   }
 
-  const handleAlert = (message) => {
-    if (message === "error") {
-      setAlert("error")
-    } else if (message === "success") {
-      setAlert("success")
-    }
-    setAlertopen(true);
-  }
-
-  const handleClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-
-    setAlertopen(false);
-  };
-
   const handleSort = (event, id) => {
-    console.log(id);
     const isAsc = orderBy === id && order === 'asc';
     if (id !== '') {
       setOrder(isAsc ? 'desc' : 'asc');
@@ -208,7 +177,6 @@ export default function UserPage() {
                         selected={selected.indexOf(user.username) !== -1}
                         handleClick={(event) => handleClick(event, user.username)}
                         handleDeleteUser={handleDeleteUser}
-                        handleAlert={handleAlert}
                         user={user}
                         fetchUsers={fetchUsers}
                       />
@@ -236,9 +204,7 @@ export default function UserPage() {
           />
         </Card>
       </Container>
-      <AddUserFormDialog open={addFormDialog} setOpen={setAddFormDialog} fetchUsers={fetchUsers} handleAlert={handleAlert} />
-
-      <AlertComp alert={alert} alertopen={alertopen} handleClose={handleClose} ></AlertComp>
+      <AddUserFormDialog open={addFormDialog} setOpen={setAddFormDialog} fetchUsers={fetchUsers} />
     </>
   );
 }

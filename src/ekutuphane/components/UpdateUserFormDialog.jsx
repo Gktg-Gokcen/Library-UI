@@ -9,6 +9,7 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import TextField from '@mui/material/TextField';
 import apiClient from '../config/AxiosConfig';
+import { toast } from 'sonner';
 
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
@@ -20,7 +21,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     },
 }));
 
-export default function UpdateUserFormDialog({ open, setOpen, user, setUser, fetchUsers, handleAlert }) {
+export default function UpdateUserFormDialog({ open, setOpen, user, setUser, fetchUsers }) {
 
     const handleClose = () => {
         setOpen(false)
@@ -32,12 +33,12 @@ export default function UpdateUserFormDialog({ open, setOpen, user, setUser, fet
             .then(() => {
                 setOpen(false);
                 fetchUsers();
-                handleAlert("success");
+                toast.success(`${user.username} adlı kullanıcı bilgileri başarıyla güncellendi.`)
             })
         }
         catch (error) {
             console.error('API isteği sırasında hata oluştu:', error);
-            handleAlert("error")
+            toast.error("Güncelleme işleminde bir hata oluştu.")
         }
       };
 

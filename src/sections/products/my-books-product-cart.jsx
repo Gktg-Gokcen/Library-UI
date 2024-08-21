@@ -14,7 +14,7 @@ import { toast } from 'sonner';
 
 // ----------------------------------------------------------------------
 
-export default function ShopProductCard({ book, handleGetBooks }) {
+export default function MyBooksProductCart({ book, handleGetBooks }) {
   const [open, setOpen] = useState(false);
   const activeUser = JSON.parse(localStorage.getItem("user"))?.user?.userId;
 
@@ -27,17 +27,12 @@ export default function ShopProductCard({ book, handleGetBooks }) {
   };
 
 
-  const handleGiveBook = async () => {
-    try {
-      await apiClient.get(`/book/give-book?bookId=${book?.bookId}&userId=${activeUser}`)
-        .then(() => {
-          handleGetBooks();
-          toast.success("Kitap alma işlemi başarılı.")
-        })
-    } catch {
-      toast.error("Aynı kitaptan birden fazla alamazsınız.");
-    }
+  const handleDropBook = async () => {
+    const res = await apiClient.get(`/book/drop-book?bookId=${book?.bookId}&userId=${activeUser}`);
+    handleGetBooks();
+    toast.success("İade işlemi başarılı.", { duration: 1000 })
   }
+
 
   const renderStatus = (
     <Label
@@ -83,15 +78,13 @@ export default function ShopProductCard({ book, handleGetBooks }) {
         {/* {book?.quantity && book?.quantity} */}
       </Typography>
       &nbsp;
-      {book?.quantity}
+      {/* {book?.quantity} */}
     </Typography>
   );
 
-  
-  
   return (
     <>
-      <Card >
+      <Card>
         <div onClick={handleClickOpen}>
           <Box sx={{ pt: '100%', position: 'relative' }}>
             {book?.status && renderStatus}
@@ -110,21 +103,23 @@ export default function ShopProductCard({ book, handleGetBooks }) {
               }}> {book?.author}</Link>
               {renderPrice}
             </Stack>
-          </Stack></div>
+          </Stack>
+        </div>
+
         <Stack>
-          <Button onClick={handleGiveBook} variant="contained" color="success" startIcon={<Iconify icon="eva:plus-fill" />}>
-            Kitabı al
+          <Button onClick={handleDropBook} variant="contained" color="primary" startIcon={<Iconify icon="eva:plus-fill" />}>
+            İade et
           </Button>
         </Stack>
-
       </Card>
-      {
-        open === true && <ShowDialog open={open} handleClose={handleClose} book={book} />
-      }
+
+      {open === true && <ShowDialog open={open} handleClose={handleClose} book={book} />}
+
     </>
   );
 }
 
-ShopProductCard.propTypes = {
+MyBooksProductCart.propTypes = {
   book: PropTypes.object,
+  handleGetBooks: PropTypes.func
 };

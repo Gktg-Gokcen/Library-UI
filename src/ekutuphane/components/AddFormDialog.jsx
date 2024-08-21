@@ -9,6 +9,7 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import TextField from '@mui/material/TextField';
 import apiClient from '../config/AxiosConfig';
+import { toast } from 'sonner';
 
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
@@ -20,7 +21,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     },
 }));
 
-export default function AddFormDialog({ open, setOpen, fetchBooks, handleGetBookAndUserCount, handleAlert }) {
+export default function AddFormDialog({ open, setOpen, fetchBooks, handleGetBookAndUserCount }) {
 
 
     const [book, setBook] = useState({});
@@ -36,11 +37,11 @@ export default function AddFormDialog({ open, setOpen, fetchBooks, handleGetBook
                     fetchBooks();
                     handleGetBookAndUserCount();
                     handleClose();
-                    handleAlert("success");
+                    toast.success("Kitap başarıyla eklendi.")
                 })
         } catch (error) {
             console.error('Kitap ekleme işlemi sırasında hata oluştu.', error);
-            handleAlert("error");
+            toast.error("Kitap eklenemedi.")
         }
     };
 

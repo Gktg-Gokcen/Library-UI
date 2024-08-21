@@ -12,6 +12,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import TextField from '@mui/material/TextField';
 import apiClient from '../config/AxiosConfig';
 import InputLabel from '@mui/material/InputLabel';
+import { toast } from 'sonner';
 
 
 
@@ -24,7 +25,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     },
 }));
 
-export default function AddUserFormDialog({ open, setOpen, fetchUsers, handleAlert }) {
+export default function AddUserFormDialog({ open, setOpen, fetchUsers }) {
 
 
     const [user, setUser] = useState({});
@@ -39,8 +40,6 @@ export default function AddUserFormDialog({ open, setOpen, fetchUsers, handleAle
 
     useEffect(() => {
         fetchRoles();
-        console.log(user);
-        
     }, [])
 
 
@@ -49,7 +48,6 @@ export default function AddUserFormDialog({ open, setOpen, fetchUsers, handleAle
         try {
             const response = await apiClient.get('/role');
             setRoles(response?.data);
-            console.log("role", response?.data);
         } catch (error) {
             console.error('API isteği sırasında bir hata oluştu:', error);
         }
@@ -57,25 +55,25 @@ export default function AddUserFormDialog({ open, setOpen, fetchUsers, handleAle
 
     const handleAddUser = async (user) => {
         try {
-            const response = await apiClient.post('/user/register?roleId='+ role, user)
+            const response = await apiClient.post('/user/register?roleId=' + role, user)
                 .then(() => {
                     fetchUsers();
                     handleClose();
                     setUser({})
-                    handleAlert("success");
+                    toast.success("Kullanıcı başarıyla eklendi.")
                 })
         } catch (error) {
             console.error('API isteği sırasında bir hata oluştu:', error);
+            toast.error("Kullanıcı eklenemedi.")
         }
     };
-    
+
+
 
     const handleChange = (event) => {
         setRole(event.target.value);
-        setUser({ ...user, roleId: event.target.value })
-        console.log("role", role);
-        
-      };
+        setUser({ ...user, roleId: event.target.value });
+    };
 
     return (
         <React.Fragment>
@@ -136,23 +134,23 @@ export default function AddUserFormDialog({ open, setOpen, fetchUsers, handleAle
                         label="Mail"
                         type="text"
                         fullWidth
-                        sx={{marginBottom: 2}}
+                        sx={{ marginBottom: 2 }}
                         variant="standard"
                         value={user?.email}
                         onChange={(e) => setUser({ ...user, email: e.target.value })}
                     />
-                     <InputLabel id="demo-select-small-label">Role</InputLabel>
+                    <InputLabel id="demo-select-small-label">Role</InputLabel>
                     <Select
                         labelId="demo-simple-select-label"
                         id="demo-simple-select"
                         value={role}
                         label="Role"
-                        sx={{ minWidth: 250, marginTop: 2}}
+                        sx={{ minWidth: 250, marginTop: 2 }}
                         onChange={handleChange}
-                        
+
                     >
                         {roles?.map((role) =>
-                        <MenuItem value={role?.id}>{role?.name}</MenuItem>
+                            <MenuItem value={role?.id}>{role?.name}</MenuItem>
                         )}
                     </Select>
                 </DialogContent>

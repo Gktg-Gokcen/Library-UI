@@ -11,6 +11,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import apiClient from '../config/AxiosConfig';
+import { toast } from 'sonner';
 
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
@@ -22,7 +23,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     },
 }));
 
-export default function FormDialog({ open, setOpen, book, setUpdatedBook, fetchBooks, handleAlert }) {
+export default function FormDialog({ open, setOpen, book, setUpdatedBook, fetchBooks }) {
 
     const handleClose = () => {
         setOpen(false)
@@ -34,12 +35,12 @@ export default function FormDialog({ open, setOpen, book, setUpdatedBook, fetchB
             .then(() => {
                 setOpen(false);
                 fetchBooks();
-                handleAlert("success");
+                toast.success(`${book?.bookName} adlı kitap başarıyla güncellendi.`)
             })
         }
         catch (error) {
             console.error('API isteği sırasında hata oluştu:', error);
-            handleAlert("error")
+            toast.error("Güncelleme işleminde hata oluştu.")
         }
       };
 

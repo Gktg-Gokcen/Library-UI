@@ -28,8 +28,7 @@ export default function UserTableRow({
   handleDeleteUser,
   user,
   fetchUsers,
-  handleAlert
-}) {
+  }) {
   const [open, setOpen] = useState(null);
   const [updateUserFormDialog, setUpdateUserFormDialog] = useState(false)
   const [updatedUser, setUpdatedUser] = useState({})
@@ -101,7 +100,7 @@ export default function UserTableRow({
         </MenuItem>
       </Popover>
       {
-        updateUserFormDialog === true && <UpdateUserFormDialog open={updateUserFormDialog} setOpen={setUpdateUserFormDialog} user={updatedUser} setUser={setUpdatedUser} fetchUsers={fetchUsers} handleAlert={handleAlert} />
+        updateUserFormDialog === true && <UpdateUserFormDialog open={updateUserFormDialog} setOpen={setUpdateUserFormDialog} user={updatedUser} setUser={setUpdatedUser} fetchUsers={fetchUsers} />
       }
     </>
   );
