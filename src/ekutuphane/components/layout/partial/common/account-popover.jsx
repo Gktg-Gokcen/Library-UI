@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
 import Divider from '@mui/material/Divider';
@@ -8,7 +7,6 @@ import { alpha } from '@mui/material/styles';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
-import { account } from 'src/_mock/account';
 import { useRouter } from 'src/routes/hooks';
 
 // ----------------------------------------------------------------------
@@ -30,9 +28,13 @@ const MENU_OPTIONS = [
 
 // ----------------------------------------------------------------------
 
-export default function AccountPopover() 
-{
+export default function AccountPopover() {
   const [open, setOpen] = useState(null);
+  const [account, setAccount] = useState({
+    displayName: JSON.parse(localStorage.getItem('user'))?.user?.username,
+    email: JSON.parse(localStorage.getItem('user'))?.user?.email,
+    photoURL: '/assets/images/avatars/avatar_25.jpg',
+  });
 
   const router = useRouter();
 
@@ -40,17 +42,35 @@ export default function AccountPopover()
     setOpen(event.currentTarget);
   };
 
+  useEffect(() => {
+    console.log("open", open);
+    
+  }, [open])
+  
+
   const handleClose = () => {
     setOpen(null);
   };
 
   const handleLogOut = async () => {
-    localStorage.removeItem("user");
-    const userItem = localStorage.getItem("user");
-    const axiosData = { user: userItem ? JSON.parse(userItem) : null };
-    axiosData.user = null;
+    localStorage.removeItem('user');
+    setAccount(null);
     router.push('/');
-  }
+  };
+
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem('user'));    
+    if (storedUser) {
+      setAccount({
+        displayName: storedUser?.user?.username,
+        email: storedUser?.user?.email,
+        photoURL: '/assets/images/avatars/avatar_25.jpg',        
+      });
+    } else {
+      setAccount(null);
+    }
+  }, []);
+  
 
   return (
     <>

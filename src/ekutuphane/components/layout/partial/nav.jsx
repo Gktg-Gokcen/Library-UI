@@ -1,10 +1,9 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Drawer from '@mui/material/Drawer';
-// import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
 import { alpha } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
@@ -14,8 +13,6 @@ import { usePathname } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
 
 import { useResponsive } from 'src/hooks/use-responsive';
-
-import { account } from 'src/_mock/account';
 
 import Logo from 'src/components/logo';
 import Scrollbar from 'src/components/scrollbar';
@@ -27,12 +24,32 @@ import navConfig from './config-navigation';
 
 export default function Nav({ openNav, onCloseNav }) {
   const pathname = usePathname();
-
   const upLg = useResponsive('up', 'lg');
+
+  const [account, setAccount] = useState({
+    displayName: JSON.parse(localStorage.getItem('user'))?.user?.username,
+    email: JSON.parse(localStorage.getItem('user'))?.user?.email,
+    photoURL: '/assets/images/avatars/avatar_25.jpg',
+    role: JSON.parse(localStorage.getItem('user'))?.user?.role || 'User', // Eğer role bilgisi varsa kullan
+  });
 
   useEffect(() => {
     if (openNav) {
       onCloseNav();
+    }
+  }, [pathname]);
+
+  useEffect(() => {
+    // localStorage'dan account bilgilerini güncelleme
+    const storedUser = JSON.parse(localStorage.getItem('user'));
+    if (storedUser) {
+      setAccount({
+        displayName: storedUser.user.username,
+        email: storedUser.user.email,
+        photoURL: '/assets/images/avatars/avatar_25.jpg',
+      });
+    } else {
+      setAccount(null); // Kullanıcı çıkış yapmışsa veya localStorage'da bilgi yoksa
     }
   }, [pathname]);
 
@@ -49,13 +66,13 @@ export default function Nav({ openNav, onCloseNav }) {
         bgcolor: (theme) => alpha(theme.palette.grey[500], 0.12),
       }}
     >
-      <Avatar src={account.photoURL} alt="photoURL" />
+      <Avatar src={account?.photoURL} alt="photoURL" />
 
       <Box sx={{ ml: 2 }}>
-        <Typography variant="subtitle2">{account.displayName}</Typography>
+        <Typography variant="subtitle2">{account?.displayName}</Typography>
 
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-          {account.role}
+          {account?.role}
         </Typography>
       </Box>
     </Box>
@@ -68,8 +85,6 @@ export default function Nav({ openNav, onCloseNav }) {
       ))}
     </Stack>
   );
-
-
 
   const renderContent = (
     <Scrollbar
@@ -89,8 +104,6 @@ export default function Nav({ openNav, onCloseNav }) {
       {renderMenu}
 
       <Box sx={{ flexGrow: 1 }} />
-
-      
     </Scrollbar>
   );
 
